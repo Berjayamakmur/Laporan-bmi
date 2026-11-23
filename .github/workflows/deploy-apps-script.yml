@@ -1,0 +1,59 @@
+name: Deploy ke Google Apps Script
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'setup.gs'
+      - 'code.gs'
+      - 'index.html'
+      - 'appsscript.json'
+      - '.claspignore'
+      - '.github/workflows/deploy-apps-script.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: apps-script-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Pasang clasp
+        run: npm install -g @google/clasp@2.4.2
+
+      - name: Siapkan kredensial dan konfigurasi clasp
+        env:
+          CLASPRC_JSON: ${{ secrets.CLASPRC_JSON }}
+          SCRIPT_ID: ${{ secrets.SCRIPT_ID }}
+        run: |
+          if [ -z "$CLASPRC_JSON" ] || [ -z "$SCRIPT_ID" ]; then
+            echo "::error::Secret CLASPRC_JSON dan SCRIPT_ID wajib diisi (lihat README)."
+            exit 1
+          fi
+          umask 077
+          printf '%s' "$CLASPRC_JSON" > "$HOME/.clasprc.json"
+          printf '{"scriptId":"%s","rootDir":"."}' "$SCRIPT_ID" > .clasp.json
+
+      - name: Push kode ke Apps Script
+        run: clasp push --force
+
+      - name: Perbarui deployment web app
+        env:
+          DEPLOYMENT_ID: ${{ secrets.DEPLOYMENT_ID }}
+        run: |
+          if [ -n "$DEPLOYMENT_ID" ]; then
+            clasp deploy --deploymentId "$DEPLOYMENT_ID" --description "GitHub ${GITHUB_SHA::7}"
+          else
+            echo "DEPLOYMENT_ID kosong: kode sudah ter-push, tetapi versi web app belum diperbarui."
+          fi
