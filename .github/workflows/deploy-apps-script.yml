@@ -50,7 +50,8 @@ jobs:
 
       - name: Perbarui deployment web app
         env:
-          DEPLOYMENT_ID: ${{ secrets.DEPLOYMENT_ID }}
+          # ID deployment web app produksi (bagian dari URL /macros/s/<ID>/exec). Secret DEPLOYMENT_ID, bila diisi, menggantikan nilai ini.
+          DEPLOYMENT_ID: ${{ secrets.DEPLOYMENT_ID || 'AKfycbzpMWdJSgSK-9JJIqYKfO_nOMYFMpgd71USE1y4IdipEGj89DZ8Ww2JhD4lgggaWHPw' }}
         run: |
           if [ -n "$DEPLOYMENT_ID" ]; then
             clasp deploy --deploymentId "$DEPLOYMENT_ID" --description "GitHub ${GITHUB_SHA::7}"

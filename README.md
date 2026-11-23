@@ -37,7 +37,7 @@ Persiapan satu kali:
 3. Di GitHub: **Settings > Secrets and variables > Actions > New repository secret**, buat:
    - `CLASPRC_JSON`: seluruh isi file `~/.clasprc.json`
    - `SCRIPT_ID`: Script ID proyek (Apps Script: Project Settings > IDs)
-   - `DEPLOYMENT_ID` (opsional tapi disarankan): ID deployment web app (Deploy > Manage deployments), agar URL web app tetap sama dan versinya ikut diperbarui. Tanpa ini, kode ter-push tetapi kamu perlu membuat versi deployment baru manual.
+   - `DEPLOYMENT_ID` (sudah diisi bawaan di workflow untuk deployment web app produksi; isi secret ini hanya jika ingin menggantinya): ID deployment web app (Deploy > Manage deployments), agar URL web app tetap sama dan versinya ikut diperbarui. Tanpa ini, kode ter-push tetapi kamu perlu membuat versi deployment baru manual.
 4. Push ke `main` atau jalankan manual lewat tab **Actions > Deploy ke Google Apps Script > Run workflow**.
 
 Catatan:
